@@ -33,10 +33,11 @@ set ( LIBSRC s2_meth.c s2_srvr.c s2_clnt.c s2_lib.c s2_enc.c s2_pkt.c s3_meth.c 
   d1_clnt.c d1_lib.c d1_pkt.c d1_both.c d1_enc.c ssl_lib.c ssl_err2.c ssl_cert.c
   ssl_sess.c ssl_ciph.c ssl_stat.c ssl_rsa.c ssl_asn1.c ssl_txt.c ssl_algs.c bio_ssl.c
   ssl_err.c kssl.c t1_reneg.c tls_srp.c s3_cbc.c d1_srtp.c )
-
+  
+set( LIBHDR ssl.h kssl.h ssl2.h ssl3.h tls1.h dtls1.h ssl23.h srtp.h)
+file( COPY ${LIBHDR} DESTINATION ${SSLIncludeDir}/openssl )
+  
 if(BUILD_OBJECT_LIBRARY_ONLY)
-  set( LIBHDR ssl.h kssl.h ssl2.h ssl3.h tls1.h dtls1.h ssl23.h srtp.h)
-  file( COPY ${LIBHDR} DESTINATION openssl )
   add_library( ssl OBJECT ${LIBSRC} ${LIBHDR} )
 else()
   add_library( ssl ${LIBSRC} )

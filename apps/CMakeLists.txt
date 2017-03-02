@@ -41,4 +41,6 @@ target_link_libraries ( openssl crypto ssl )
 install( TARGETS openssl
     RUNTIME DESTINATION bin )
 
-install( FILES CA.sh CA.pl tsget DESTINATION share/openssl )
+install( FILES CA.sh 
+	#CA.pl # Also not contained in this branch, check https://github.com/pol51/OpenSSL-CMake
+	tsget DESTINATION share/openssl )

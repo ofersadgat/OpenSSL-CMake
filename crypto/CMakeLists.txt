@@ -49,7 +49,7 @@ configure_file( buildinf.h.cmake buildinf.h )
 if( WIN32 AND MINGW AND NOT CYGWIN )
   set( OPENSSL_EXPORT_VAR_AS_FUNCTION true )
 endif()
-configure_file( ${CMAKE_CURRENT_BINARY_DIR}/opensslconf.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/openssl/opensslconf.h )
+configure_file( ${CMAKE_CURRENT_BINARY_DIR}/opensslconf.h.cmake ${SSLIncludeDir}/openssl/opensslconf.h )
 
 set( LIBSRC cryptlib.c mem.c mem_clr.c mem_dbg.c cversion.c ex_data.c cpt_err.c
   ebcdic.c uid.c o_time.c o_str.c o_dir.c o_init.c )
@@ -216,15 +216,16 @@ add_submodule( x509v3 v3_bcons.c v3_bitst.c v3_conf.c v3_extku.c v3_ia5.c v3_lib
 add_submodule( . EXHEADERS crypto.h opensslv.h opensslconf.h ebcdic.h symhacks.h
   ossl_typ.h )
 
+set( crypto_headers ${EXHEADERS} )
+list( REMOVE_ITEM crypto_headers ./opensslconf.h )
+file( COPY ${crypto_headers} DESTINATION ${SSLIncludeDir}/openssl )
+  
 if(BUILD_OBJECT_LIBRARY_ONLY)
   add_definitions(-DOPENSSL_THREADS)
   if( WIN32 AND MINGW AND NOT CYGWIN )
     add_definitions(-DDSO_WIN32 -DWIN32_LEAN_AND_MEAN)
   endif( WIN32 AND MINGW AND NOT CYGWIN )
   add_library( crypto OBJECT ${LIBSRC} ${OBJECTS_SRC} )
-  set( crypto_headers ${EXHEADERS} )
-  list( REMOVE_ITEM crypto_headers ./opensslconf.h )
-  file( COPY ${crypto_headers} DESTINATION openssl )
 else()
   add_library( crypto ${LIBSRC} ${OBJECTS_SRC} )
 
