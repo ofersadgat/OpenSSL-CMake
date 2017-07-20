@@ -24,30 +24,37 @@
 # SOFTWARE.
 
 if( BUILD_SHARED_LIBS )
-    add_definitions ( -DOPENSSL_BUILD_SHLIBSSL )
+    list( APPEND definitions OPENSSL_BUILD_SHLIBSSL )
 endif()
 
 set ( LIBSRC s2_meth.c s2_srvr.c s2_clnt.c s2_lib.c s2_enc.c s2_pkt.c s3_meth.c s3_srvr.c
   s3_clnt.c s3_lib.c s3_enc.c s3_pkt.c s3_both.c s23_meth.c s23_srvr.c s23_clnt.c
   s23_lib.c s23_pkt.c t1_meth.c t1_srvr.c t1_clnt.c t1_lib.c t1_enc.c d1_meth.c d1_srvr.c
-  d1_clnt.c d1_lib.c d1_pkt.c d1_both.c d1_enc.c ssl_lib.c ssl_err2.c ssl_cert.c
+  d1_clnt.c d1_lib.c d1_pkt.c d1_both.c ssl_lib.c ssl_err2.c ssl_cert.c
   ssl_sess.c ssl_ciph.c ssl_stat.c ssl_rsa.c ssl_asn1.c ssl_txt.c ssl_algs.c bio_ssl.c
-  ssl_err.c kssl.c t1_reneg.c tls_srp.c s3_cbc.c d1_srtp.c )
-  
+  ssl_err.c kssl.c t1_reneg.c tls_srp.c s3_cbc.c d1_srtp.c t1_ext.c )
+
 set( LIBHDR ssl.h kssl.h ssl2.h ssl3.h tls1.h dtls1.h ssl23.h srtp.h)
 file( COPY ${LIBHDR} DESTINATION ${SSLIncludeDir}/openssl )
-  
+
 if(BUILD_OBJECT_LIBRARY_ONLY)
-  add_library( ssl OBJECT ${LIBSRC} ${LIBHDR} )
+    add_library( ssl OBJECT ${LIBSRC} ${LIBHDR} )
 else()
-  add_library( ssl ${LIBSRC} )
-  target_link_libraries( ssl crypto )
+    add_library( ssl ${LIBSRC} )
+    target_link_libraries( ssl PUBLIC crypto )
+    target_include_directories( ssl
+        PUBLIC ${SSLIncludeDir} . ..
+    )
 
-  install( FILES ssl.h ssl2.h ssl3.h ssl23.h tls1.h dtls1.h kssl.h
-      DESTINATION include/openssl )
+    target_compile_definitions( ssl PUBLIC ${definitions} )
 
-  install( TARGETS ssl
-      RUNTIME DESTINATION bin
-      LIBRARY DESTINATION lib
-      ARCHIVE DESTINATION lib )
+    install( FILES ssl.h ssl2.h ssl3.h ssl23.h tls1.h dtls1.h kssl.h
+        DESTINATION include/openssl
+    )
+
+    install( TARGETS ssl
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+    )
 endif()

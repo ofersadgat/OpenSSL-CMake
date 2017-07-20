@@ -23,44 +23,54 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
 project( openssl )
-cmake_minimum_required( VERSION 2.8.3 )
+cmake_minimum_required( VERSION 3.4 )
 
-set(BUILD_OBJECT_LIBRARY_ONLY OFF)
+option( BUILD_OBJECT_LIBRARY_ONLY OFF )
+option( OPENSSL_BUILD_APPS ON )
 
-set(SSLIncludeDir ${CMAKE_SOURCE_DIR}/include)
-#set(Includes ${CMAKE_CURRENT_BINARY_DIR}/crypto ${CMAKE_CURRENT_BINARY_DIR}/ssl ${CMAKE_SOURCE_DIR}/crypto ${CMAKE_SOURCE_DIR}/.. ${CMAKE_SOURCE_DIR})
-set(Includes ${SSLIncludeDir} ${CMAKE_CURRENT_BINARY_DIR}/ssl ${CMAKE_SOURCE_DIR}/crypto .)
-message(STATUS "Include dirs: ${Includes}")
-include_directories ( BEFORE SYSTEM ${Includes})
+set( SSLIncludeDir ${CMAKE_CURRENT_BINARY_DIR}/include )
 
-add_definitions( -DOPENSSL_NO_ASM )
+set( definitions
+    OPENSSL_NO_ASM
+)
 
 if( WIN32 AND NOT CYGWIN )
-  add_definitions( -DOPENSSL_SYSNAME_WIN32 )
-  add_definitions( -DWIN32_LEAN_AND_MEAN )
-endif ( )
+    list( APPEND definitions
+        OPENSSL_SYSNAME_WIN32
+        WIN32_LEAN_AND_MEAN
+    )
+
+    set( CMAKE_DEBUG_POSTFIX d )
+
+endif()
+
+if( MSVC )
+    # Support parallel building of translation units with MSVC toolchain
+    add_definitions(/MP)
+endif()
 
 if( MINGW )
   set( CMAKE_SHARED_LINKER_FLAGS "-Wl,--export-all" )
 endif()
 
+file( COPY e_os2.h e_os.h DESTINATION ${SSLIncludeDir}/openssl )
+
 add_subdirectory( crypto )
 add_subdirectory( ssl )
 
-file( COPY e_os2.h e_os.h DESTINATION ${SSLIncludeDir}/openssl )
+if( OPENSSL_BUILD_APPS )
+    add_subdirectory( apps )
+endif()
 
-add_subdirectory( apps )
-
-install( FILES tools/c_hash tools/c_info tools/c_issuer tools/c_name 
+install( FILES tools/c_hash tools/c_info tools/c_issuer tools/c_name
   #tools/c_rehash # This one is not contained in this branch for some reason, check here https://github.com/pol51/OpenSSL-CMake
   FAQ LICENSE PROBLEMS README README.ASN1 README.ENGINE
   DESTINATION share/openssl )
 
-install( DIRECTORY doc DESTINATION ./ )
+install( DIRECTORY doc/ DESTINATION doc )
 
-install( FILES e_os2.h DESTINATION include/openssl)
+install( FILES e_os2.h DESTINATION include/openssl )
 
 # Generate the package target
 set( CPACK_GENERATOR ZIP TGZ )
