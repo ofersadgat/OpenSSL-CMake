@@ -26,8 +26,8 @@
 project( openssl )
 cmake_minimum_required( VERSION 3.4 )
 
-option( BUILD_OBJECT_LIBRARY_ONLY OFF )
-option( OPENSSL_BUILD_APPS ON )
+option( BUILD_OBJECT_LIBRARY_ONLY "Enable to only get OBJECT-type libraries, otherwise you get STATIC libraries" OFF )
+option( OPENSSL_BUILD_APPS "Enable executable targets. Disable if you only want the libraries" ON )
 
 set( SSLIncludeDir ${CMAKE_CURRENT_BINARY_DIR}/include )
 
