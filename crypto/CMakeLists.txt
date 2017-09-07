@@ -67,7 +67,7 @@ endif()
 
 include( source_files.cmake )
 
-file( COPY ${LIBSRC} DESTINATION ${SSLIncludeDir}/openssl FILES_MATCHING REGEX "\.h$" )
+file( INSTALL ${LIBSRC} DESTINATION ${SSLIncludeDir}/openssl FILES_MATCHING REGEX "\.h$" )
 
 if(BUILD_OBJECT_LIBRARY_ONLY)
     list( APPEND definitions OPENSSL_THREADS )
