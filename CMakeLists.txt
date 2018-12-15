@@ -48,6 +48,8 @@ endif()
 if( MSVC )
     # Support parallel building of translation units with MSVC toolchain
     add_definitions(/MP)
+else()
+    SET(CMAKE_C_FLAGS "-fPIC")
 endif()
 
 if( MINGW )
