@@ -47,7 +47,7 @@ endif()
 
 if (CMAKE_C_COMPILER_ID STREQUAL "Clang")
 
-ekse()
+else()
 if( MSVC )
     # Support parallel building of translation units with MSVC toolchain
     add_definitions(/MP)
