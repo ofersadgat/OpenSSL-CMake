@@ -45,11 +45,15 @@ if( WIN32 AND NOT CYGWIN )
 
 endif()
 
+if (CMAKE_C_COMPILER_ID STREQUAL "Clang")
+
+ekse()
 if( MSVC )
     # Support parallel building of translation units with MSVC toolchain
     add_definitions(/MP)
 else()
     SET(CMAKE_C_FLAGS "-fPIC")
+endif()
 endif()
 
 if (MSVC)
